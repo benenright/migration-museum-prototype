@@ -1,26 +1,283 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --font-work-sans: 'Work Sans', sans-serif;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  /* Migration Museum Brand Colors */
+  --color-mm-blue: #5A5FEF;
+  --color-mm-violet: #A880FF;
+  --color-mm-orange: #FF5C45;
+  --color-mm-yellow: #FFD700;
+  --color-mm-green: #59F5B1;
+  --color-mm-black: #000000;
+  --color-mm-grey: #757575;
+  --color-mm-grey-mid: #D1D1D1;
+  --color-mm-grey-light: #E5E5E5;
+  --color-mm-white: #FFFFFF;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --font-sans: var(--font-work-sans);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-mm-white);
+  color: var(--color-mm-black);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Default link styling - no underline, inherit color from parent or utility classes */
+a {
+  text-decoration: none;
+}
+
+/* Dark mode styles */
+[data-theme="dark"] body {
+  background: var(--color-mm-black);
+  color: var(--color-mm-white);
+}
+
+[data-theme="dark"] .bg-mm-white {
+  background-color: var(--color-mm-black) !important;
+}
+
+[data-theme="dark"] .text-mm-black {
+  color: var(--color-mm-white) !important;
+}
+
+[data-theme="dark"] .text-mm-grey {
+  color: #B0B0B0 !important;
+}
+
+[data-theme="dark"] .border-mm-grey-mid,
+[data-theme="dark"] .border-mm-grey-light {
+  border-color: #333333 !important;
+}
+
+[data-theme="dark"] .bg-mm-grey-light {
+  background-color: #1a1a1a !important;
+}
+
+/* Headers in dark mode */
+[data-theme="dark"] h1,
+[data-theme="dark"] h2,
+[data-theme="dark"] h3,
+[data-theme="dark"] h4,
+[data-theme="dark"] h5,
+[data-theme="dark"] h6 {
+  color: var(--color-mm-white);
+}
+
+/* Cards and bordered elements in dark mode */
+[data-theme="dark"] .border {
+  border-color: #333333;
+}
+
+/* Specific overrides for elements that should stay white text */
+[data-theme="dark"] .text-mm-white {
+  color: var(--color-mm-white) !important;
+}
+
+/* Dark mode logo inversion */
+[data-theme="dark"] .dark-logo-invert {
+  filter: brightness(0) invert(1);
+}
+
+/* Header in dark mode */
+[data-theme="dark"] header {
+  background-color: var(--color-mm-black);
+  border-color: #333333;
+}
+
+/* Input fields in dark mode */
+[data-theme="dark"] input,
+[data-theme="dark"] select {
+  background-color: #1a1a1a;
+  color: var(--color-mm-white);
+  border-color: #333333;
+}
+
+[data-theme="dark"] input::placeholder {
+  color: #666666;
+}
+
+/* Heading styles - Title Case preferred over ALL CAPS */
+h1 {
+  font-size: 5rem;
+  font-weight: 700;
+  line-height: 0.95;
+}
+
+h2 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: 2rem;
+}
+
+h3 {
+  font-size: 1.4rem;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+@media (min-width: 768px) {
+  h1 {
+    font-size: 7rem;
+  }
+
+  h2 {
+    font-size: 3rem;
+  }
+
+  h3 {
+    font-size: 1.6rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  h1 {
+    font-size: 5.5rem;
+  }
+}
+
+/* Skip to content link for accessibility */
+.skip-to-content {
+  position: absolute;
+  top: -100%;
+  left: 0;
+  background: var(--color-mm-black);
+  color: var(--color-mm-white);
+  padding: 0.5rem 1rem;
+  z-index: 50;
+}
+
+.skip-to-content:focus {
+  top: 0;
+}
+
+/* Collage aesthetic utilities */
+.torn-edge {
+  clip-path: polygon(
+    0% 2%, 3% 0%, 7% 1%, 12% 0%, 17% 2%, 22% 1%, 27% 0%, 32% 1%,
+    37% 2%, 42% 0%, 47% 1%, 52% 0%, 57% 2%, 62% 1%, 67% 0%, 72% 1%,
+    77% 2%, 82% 0%, 87% 1%, 92% 0%, 97% 2%, 100% 0%,
+    100% 98%, 97% 100%, 92% 99%, 87% 100%, 82% 98%, 77% 99%, 72% 100%,
+    67% 99%, 62% 98%, 57% 100%, 52% 99%, 47% 100%, 42% 98%, 37% 99%,
+    32% 100%, 27% 99%, 22% 98%, 17% 100%, 12% 99%, 7% 100%, 3% 98%, 0% 100%
+  );
+}
+
+.angled-edge {
+  clip-path: polygon(0 0, 100% 2%, 100% 100%, 0 98%);
+}
+
+/* Collage animations */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-10px) rotate(1deg);
+  }
+}
+
+@keyframes pulse-subtle {
+  0%, 100% {
+    opacity: 0.2;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+
+@keyframes slide-in {
+  0% {
+    opacity: 0;
+    transform: translateY(30px) scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes carousel-slide-from-left {
+  0% {
+    opacity: 0;
+    transform: translateX(-200px) scale(0.7);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(-48px) scale(0.9);
+  }
+}
+
+@keyframes carousel-slide-from-right {
+  0% {
+    opacity: 0;
+    transform: translateX(200px) scale(0.7);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(48px) scale(0.9);
+  }
+}
+
+@keyframes carousel-slide-center {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@media (min-width: 768px) {
+  @keyframes carousel-slide-from-left {
+    0% {
+      opacity: 0;
+      transform: translateX(-250px) scale(0.7);
+    }
+    100% {
+      opacity: 1;
+      transform: translateX(-96px) scale(0.95);
+    }
+  }
+
+  @keyframes carousel-slide-from-right {
+    0% {
+      opacity: 0;
+      transform: translateX(250px) scale(0.7);
+    }
+    100% {
+      opacity: 1;
+      transform: translateX(96px) scale(0.95);
+    }
+  }
+
+  @keyframes carousel-slide-center {
+    0% {
+      opacity: 0;
+      transform: scale(0.9);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1.25);
+    }
+  }
+}
+
+.collage-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.pattern-pulse {
+  animation: pulse-subtle 4s ease-in-out infinite;
+}
+
+.animate-slide-in {
+  animation: slide-in 0.8s ease-out;
 }
