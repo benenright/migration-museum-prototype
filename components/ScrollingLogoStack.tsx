@@ -98,7 +98,7 @@ export default function ScrollingLogoStack() {
         const logoElement = document.elementFromPoint(100, 100);
 
         if (logoElement) {
-          let element = logoElement;
+          let element: HTMLElement | null = logoElement as HTMLElement;
           let bgColor = window.getComputedStyle(element).backgroundColor;
 
           // Walk up the DOM tree until we find a non-transparent background
