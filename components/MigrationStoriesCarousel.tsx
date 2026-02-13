@@ -1,8 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { colorMap, textColorMap } from '@/constants/colors';
 
 interface Story {
   id: string;
@@ -18,22 +19,6 @@ interface MigrationStoriesCarouselProps {
   stories: Story[];
 }
 
-const colorMap = {
-  blue: '#5A5FEF',
-  violet: '#A880FF',
-  orange: '#FF5C45',
-  yellow: '#FFD700',
-  green: '#59F5B1',
-};
-
-const textColorMap = {
-  blue: '#FFFFFF',
-  violet: '#FFFFFF',
-  orange: '#FFFFFF',
-  yellow: '#000000',
-  green: '#000000',
-};
-
 export default function MigrationStoriesCarousel({ stories }: MigrationStoriesCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -44,6 +29,33 @@ export default function MigrationStoriesCarousel({ stories }: MigrationStoriesCa
   const goToNext = () => {
     setCurrentIndex((prevIndex) => (prevIndex === stories.length - 1 ? 0 : prevIndex + 1));
   };
+
+  // Keyboard navigation support
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      switch (event.key) {
+        case 'ArrowLeft':
+          event.preventDefault();
+          goToPrevious();
+          break;
+        case 'ArrowRight':
+          event.preventDefault();
+          goToNext();
+          break;
+        case 'Home':
+          event.preventDefault();
+          setCurrentIndex(0);
+          break;
+        case 'End':
+          event.preventDefault();
+          setCurrentIndex(stories.length - 1);
+          break;
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [stories.length]);
 
   // Get visible stories with their positions relative to center
   const getVisibleStories = () => {
@@ -80,7 +92,7 @@ export default function MigrationStoriesCarousel({ stories }: MigrationStoriesCa
       {/* Section Header */}
       <div className="bg-mm-white py-16">
         <div className="container mx-auto px-4">
-          <h2 className="uppercase tracking-tight text-center mb-2" style={{ fontWeight: 200, fontSize: 'clamp(3rem, 15vw, 120px)' }}>
+          <h2 className="uppercase text-center mb-2" style={{ color: '#000000', fontWeight: 300, fontSize: 'clamp(3rem, 10vw, 100px)', letterSpacing: '-0.02em' }}>
             Migration Stories
           </h2>
           <p className="text-center text-mm-grey text-xl">
@@ -89,12 +101,89 @@ export default function MigrationStoriesCarousel({ stories }: MigrationStoriesCa
         </div>
       </div>
 
-      {/* Carousel Container */}
-      <div className="relative min-h-[700px] flex items-center justify-center py-20 bg-mm-white">
+      {/* Mobile Carousel - Horizontal Scroll */}
+      <div className="block md:hidden py-12 bg-mm-white">
+        <div className="relative overflow-x-auto overflow-y-hidden scrollbar-hide">
+          <div className="flex gap-5 px-5" style={{ scrollSnapType: 'x mandatory' }}>
+            {stories.map((story, idx) => {
+              const imageNumber = (idx % 4) + 1;
+              const imageSrc = imageNumber === 1 ? '/images/story.png' : `/images/story${imageNumber}.png`;
+              const isCurrent = idx === currentIndex;
+              const bgColor = isCurrent ? colorMap[story.accentColor] : '#FFFFFF';
+              const textColor = isCurrent ? textColorMap[story.accentColor] : '#000000';
+
+              return (
+                <Link
+                  key={story.id}
+                  href={`/explore/${story.slug}`}
+                  className="flex-shrink-0 overflow-hidden shadow-xl"
+                  style={{
+                    width: 'calc(100vw - 60px)',
+                    backgroundColor: bgColor,
+                    scrollSnapAlign: 'center',
+                  }}
+                >
+                  <div className="relative w-full h-64 overflow-hidden">
+                    <Image src={imageSrc} alt={story.title} fill className="object-cover" />
+                  </div>
+                  <div className="p-6">
+                    {isCurrent && (
+                      <div
+                        className="inline-block px-3 py-1 mb-4 text-xs font-bold uppercase"
+                        style={{ backgroundColor: textColor, color: bgColor }}
+                      >
+                        Featured Story
+                      </div>
+                    )}
+                    <div className="mb-4">
+                      <p className="text-sm font-bold mb-1" style={{ color: textColor }}>
+                        {story.timePeriod}
+                      </p>
+                      <p className="text-sm opacity-80" style={{ color: textColor }}>
+                        {story.geography}
+                      </p>
+                    </div>
+                    <h3 className="text-2xl font-bold mb-3 leading-tight" style={{ color: textColor }}>
+                      {story.title}
+                    </h3>
+                    <p className="text-sm mb-4 opacity-90" style={{ color: textColor }}>
+                      {story.excerpt.substring(0, 120)}...
+                    </p>
+                    <div className="flex items-center gap-2 font-bold" style={{ color: textColor }}>
+                      <span>Read story</span>
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </div>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Progress Indicators */}
+        <div className="flex justify-center gap-2 mt-8">
+          {stories.map((_, idx) => (
+            <button
+              key={idx}
+              onClick={() => setCurrentIndex(idx)}
+              className={`h-2 rounded-full transition-all ${
+                idx === currentIndex ? 'w-8 bg-mm-black' : 'w-2 bg-mm-grey-mid'
+              }`}
+              aria-label={`Go to story ${idx + 1}`}
+            />
+          ))}
+        </div>
+      </div>
+
+      {/* Desktop Carousel - Hidden on Mobile */}
+      <div className="hidden md:block relative min-h-[700px] items-center justify-center py-20 bg-mm-white">
         {/* Navigation Arrows */}
         <button
           onClick={goToPrevious}
-          className="absolute left-4 md:left-8 z-50 bg-mm-white hover:bg-mm-black rounded-full p-4 shadow-lg transition-all group"
+          className="absolute z-50 bg-mm-white hover:bg-mm-black rounded-full p-4 shadow-lg transition-all group"
+          style={{ left: 'calc(10% - 30px)', top: '50%', transform: 'translateY(-50%)' }}
           aria-label="Previous story"
         >
           <Image
@@ -108,7 +197,8 @@ export default function MigrationStoriesCarousel({ stories }: MigrationStoriesCa
 
         <button
           onClick={goToNext}
-          className="absolute right-4 md:right-8 z-50 bg-mm-white hover:bg-mm-black rounded-full p-4 shadow-lg transition-all group"
+          className="absolute z-50 bg-mm-white hover:bg-mm-black rounded-full p-4 shadow-lg transition-all group"
+          style={{ right: 'calc(10% - 30px)', top: '50%', transform: 'translateY(-50%)' }}
           aria-label="Next story"
         >
           <Image
@@ -202,8 +292,8 @@ export default function MigrationStoriesCarousel({ stories }: MigrationStoriesCa
 
                     {/* Excerpt */}
                     <p
-                      className={`mb-6 flex-grow ${isCenter ? 'text-base' : 'text-sm'}`}
-                      style={{ color: textColor, opacity: 0.9 }}
+                      className={`mb-6 flex-grow opacity-90 ${isCenter ? 'text-base' : 'text-sm'}`}
+                      style={{ color: textColor }}
                     >
                       {story.excerpt.substring(0, 150)}...
                     </p>

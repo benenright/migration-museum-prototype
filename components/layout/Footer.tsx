@@ -7,19 +7,43 @@ export default function Footer() {
   const { theme, toggleTheme } = useTheme();
 
   return (
-    <footer className="bg-mm-black text-mm-white mt-20">
-      <div className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
-          {/* About */}
+    <footer className="bg-mm-black text-mm-white mt-20 min-h-screen flex items-center">
+      <div className="container mx-auto py-12" style={{ paddingLeft: '120px', paddingRight: '1rem' }}>
+        {/* Four Columns */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-20">
+          {/* Visit */}
           <div>
-            <img
-              src="/mm-logo.svg"
-              alt="Migration Museum"
-              className="h-16 w-auto mb-4 brightness-0 invert"
-            />
-            <p className="text-sm text-mm-grey-mid mb-4">
-              Revealing, remixing, and reframing the story of migration in Britain.
-            </p>
+            <h4 className="font-bold mb-4">Visit</h4>
+            <ul className="space-y-2 small-text">
+              <li><Link href="/visit" className="text-mm-grey-mid hover:text-mm-white transition-colors">Plan Your Visit</Link></li>
+              <li><Link href="/visit/whats-on" className="text-mm-grey-mid hover:text-mm-white transition-colors">What&apos;s On</Link></li>
+              <li><Link href="/visit/access" className="text-mm-grey-mid hover:text-mm-white transition-colors">Accessibility</Link></li>
+            </ul>
+          </div>
+
+          {/* Explore & Learn */}
+          <div>
+            <h4 className="font-bold mb-4">Explore & Learn</h4>
+            <ul className="space-y-2 small-text">
+              <li><Link href="/explore" className="text-mm-grey-mid hover:text-mm-white transition-colors">Stories</Link></li>
+              <li><Link href="/learn" className="text-mm-grey-mid hover:text-mm-white transition-colors">Education</Link></li>
+              <li><Link href="/learn/resources" className="text-mm-grey-mid hover:text-mm-white transition-colors">Resources</Link></li>
+            </ul>
+          </div>
+
+          {/* Support */}
+          <div>
+            <h4 className="font-bold mb-4">Support Us</h4>
+            <ul className="space-y-2 small-text">
+              <li><Link href="/support/donate" className="text-mm-grey-mid hover:text-mm-white transition-colors">Donate</Link></li>
+              <li><Link href="/support/membership" className="text-mm-grey-mid hover:text-mm-white transition-colors">Become a Member</Link></li>
+              <li><Link href="/support/volunteer" className="text-mm-grey-mid hover:text-mm-white transition-colors">Volunteer</Link></li>
+            </ul>
+          </div>
+
+          {/* Social Media */}
+          <div>
+            <h4 className="font-bold mb-4">Follow Us</h4>
             <div className="flex gap-4">
               <a href="https://instagram.com" className="hover:text-mm-violet transition-colors" aria-label="Instagram">
                 <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
@@ -34,39 +58,40 @@ export default function Footer() {
               </a>
             </div>
           </div>
+        </div>
 
-          {/* Visit */}
-          <div>
-            <h4 className="font-bold mb-4">Visit</h4>
-            <ul className="space-y-2 text-sm">
-              <li><Link href="/visit" className="text-mm-grey-mid hover:text-mm-white transition-colors">Plan Your Visit</Link></li>
-              <li><Link href="/visit/whats-on" className="text-mm-grey-mid hover:text-mm-white transition-colors">What&apos;s On</Link></li>
-              <li><Link href="/visit/access" className="text-mm-grey-mid hover:text-mm-white transition-colors">Accessibility</Link></li>
-            </ul>
-          </div>
-
-          {/* Explore & Learn */}
-          <div>
-            <h4 className="font-bold mb-4">Explore & Learn</h4>
-            <ul className="space-y-2 text-sm">
-              <li><Link href="/explore" className="text-mm-grey-mid hover:text-mm-white transition-colors">Stories</Link></li>
-              <li><Link href="/learn" className="text-mm-grey-mid hover:text-mm-white transition-colors">Education</Link></li>
-              <li><Link href="/learn/resources" className="text-mm-grey-mid hover:text-mm-white transition-colors">Resources</Link></li>
-            </ul>
-          </div>
-
-          {/* Support */}
-          <div>
-            <h4 className="font-bold mb-4">Support Us</h4>
-            <ul className="space-y-2 text-sm">
-              <li><Link href="/support/donate" className="text-mm-grey-mid hover:text-mm-white transition-colors">Donate</Link></li>
-              <li><Link href="/support/membership" className="text-mm-grey-mid hover:text-mm-white transition-colors">Become a Member</Link></li>
-              <li><Link href="/support/volunteer" className="text-mm-grey-mid hover:text-mm-white transition-colors">Volunteer</Link></li>
-            </ul>
+        {/* Newsletter Signup */}
+        <div className="border-t border-mm-grey/20 pt-20 mb-20">
+          <h3 className="text-4xl md:text-5xl font-bold mb-4">Stay Connected</h3>
+          <p className="lead-text text-mm-grey-mid mb-6">
+            Get the latest news about exhibitions, events, and migration stories delivered to your inbox.
+          </p>
+          <div className="max-w-4xl">
+            <form className="flex flex-col sm:flex-row gap-4">
+              <label htmlFor="newsletter-email" className="sr-only">Email address</label>
+              <input
+                id="newsletter-email"
+                type="email"
+                placeholder="Enter your email address"
+                className="flex-1 px-4 py-3 bg-[#1a1a1a] border border-mm-grey text-mm-white placeholder-mm-grey-mid rounded focus:outline-none focus:ring-2 focus:ring-mm-violet transition-colors"
+                required
+                aria-label="Email address for newsletter"
+              />
+              <button
+                type="submit"
+                className="px-8 py-3 bg-mm-white text-mm-black font-bold rounded hover:bg-mm-violet hover:text-mm-white transition-all"
+              >
+                Subscribe
+              </button>
+            </form>
+            <p className="badge-text text-mm-grey-mid mt-3">
+              We respect your privacy. Unsubscribe at any time.
+            </p>
           </div>
         </div>
 
-        <div className="border-t border-mm-grey/20 pt-8 flex flex-col md:flex-row justify-between items-center text-sm text-mm-grey-mid gap-4">
+        {/* Copyright and Links */}
+        <div className="border-t border-mm-grey/20 pt-12 flex flex-col md:flex-row justify-between items-center small-text text-mm-grey-mid gap-4">
           <p>&copy; 2026 Migration Museum. All rights reserved.</p>
 
           <div className="flex items-center gap-6">

@@ -1,8 +1,12 @@
 import { notFound } from 'next/navigation';
+import Image from 'next/image';
 import Header from '@/components/layout/HeaderWithDropdowns';
 import Footer from '@/components/layout/Footer';
+import ScrollingLogoStack from '@/components/ScrollingLogoStack';
 import MigrationStoriesCarousel from '@/components/MigrationStoriesCarousel';
+import IntroBlock from '@/components/streamfield/IntroBlock';
 import { featuredStories } from '@/data/sampleContent';
+import { colorMap } from '@/constants/colors';
 
 export function generateStaticParams() {
   return featuredStories.map((story) => ({
@@ -18,14 +22,6 @@ export default async function StoryPage({ params }: { params: Promise<{ slug: st
     notFound();
   }
 
-  const colorMap = {
-    blue: '#5A5FEF',
-    violet: '#A880FF',
-    orange: '#FF5C45',
-    yellow: '#FFD700',
-    green: '#59F5B1',
-  };
-
   // Get the story index to determine which image to use
   const storyIndex = featuredStories.findIndex((s) => s.id === story.id);
   const imageNumber = (storyIndex % 4) + 1;
@@ -33,47 +29,52 @@ export default async function StoryPage({ params }: { params: Promise<{ slug: st
 
   return (
     <>
-      <Header />
+      {/* Scrolling Logo Stack */}
+      <ScrollingLogoStack />
 
-      <main id="main-content">
-        {/* Hero Image */}
+      {/* Header with transparent background overlay */}
+      <div className="relative">
+        <div className="absolute top-0 left-0 right-0 z-50">
+          <Header transparent hideLogo searchIconOnly />
+        </div>
+
+        <main id="main-content">
+        {/* Colored Text Block - Full Width at Top */}
         <section
-          className="relative min-h-[90vh] flex items-end"
-          style={{ backgroundColor: colorMap[story.accentColor] }}
+          className="relative py-12 pt-[200px] min-h-[50vh] flex items-end"
+          style={{
+            background: colorMap[story.accentColor],
+          }}
         >
-          {/* Background Image */}
-          <div className="absolute inset-0">
-            <img
-              src={heroImage}
-              alt={story.title}
-              className="w-full h-full object-cover"
-              style={{ opacity: 0.3 }}
-            />
-            <div
-              className="absolute inset-0"
-              style={{
-                background: `linear-gradient(to bottom, transparent 0%, ${colorMap[story.accentColor]} 100%)`,
-                opacity: 0.6
-              }}
-            />
-          </div>
-
-          <div className="container mx-auto px-4 py-12 relative z-10">
-            <div className="max-w-4xl">
+          <div className="container mx-auto px-4 lg:pl-[180px]">
+            <div className="max-w-3xl">
               {/* Breadcrumb */}
-              <div className="mb-4 flex items-center gap-2 text-mm-white">
+              <div
+                className="mb-4 flex items-center gap-2"
+                style={{
+                  color: ['yellow', 'green'].includes(story.accentColor) ? '#000000' : '#FFFFFF'
+                }}
+              >
                 <a href="/" className="hover:underline">Home</a>
                 <span>/</span>
                 <a href="/explore" className="hover:underline">Explore</a>
-                <span>/</span>
-                <span>{story.title}</span>
               </div>
 
-              <h1 className="text-mm-white mb-4">
+              <h1
+                className="mb-4"
+                style={{
+                  color: ['yellow', 'green'].includes(story.accentColor) ? '#000000' : '#FFFFFF'
+                }}
+              >
                 {story.title}
               </h1>
 
-              <div className="flex flex-wrap gap-4 text-mm-white text-lg">
+              <div
+                className="flex flex-wrap gap-4 text-lg"
+                style={{
+                  color: ['yellow', 'green'].includes(story.accentColor) ? '#000000' : '#FFFFFF'
+                }}
+              >
                 <div className="flex items-center gap-2">
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -88,6 +89,20 @@ export default async function StoryPage({ params }: { params: Promise<{ slug: st
                 </div>
               </div>
             </div>
+          </div>
+        </section>
+
+        {/* Hero Image */}
+        <section className="relative min-h-[80vh] bg-mm-white">
+          <div className="relative w-full h-full min-h-[80vh]">
+            <Image
+              src={heroImage}
+              alt={story.title}
+              fill
+              priority
+              sizes="100vw"
+              className="object-cover object-top"
+            />
           </div>
         </section>
 
@@ -109,7 +124,7 @@ export default async function StoryPage({ params }: { params: Promise<{ slug: st
 
               {/* Introduction */}
               <div className="prose prose-xl max-w-none mb-12">
-                <p className="text-[20px] font-medium text-mm-grey leading-relaxed">
+                <p className="intro-text text-mm-black">
                   {story.excerpt}
                 </p>
               </div>
@@ -119,24 +134,24 @@ export default async function StoryPage({ params }: { params: Promise<{ slug: st
                 {/* Rich Text Block */}
                 <div className="prose prose-xl max-w-none">
                   <h2>The Journey Begins</h2>
-                  <p className="text-[20px] leading-relaxed mb-6">
+                  <p className="body-text mb-6">
                     Every migration story is unique, shaped by individual circumstances, aspirations,
                     and the broader historical context. This narrative explores the complex realities
                     of movement, belonging, and identity that have shaped Britain for centuries.
                   </p>
-                  <p className="text-[20px] leading-relaxed mb-6">
+                  <p className="body-text mb-6">
                     Understanding these stories helps us see migration not as a distant historical
                     phenomenon, but as a lived experience that connects us all. Through personal
                     accounts, archival materials, and cultural artifacts, we piece together a more
                     complete picture of British history.
                   </p>
-                  <p className="text-[20px] leading-relaxed mb-6">
+                  <p className="body-text mb-6">
                     The decision to migrate is rarely simple. It involves leaving behind familiar
                     places, communities, and ways of life while embracing uncertainty and the
                     promise of new opportunities. These journeys are marked by courage, resilience,
                     and an enduring hope for a better future.
                   </p>
-                  <p className="text-[20px] leading-relaxed mb-6">
+                  <p className="body-text mb-6">
                     For many, migration meant navigating complex bureaucratic systems, learning new
                     languages, and adapting to unfamiliar customs. Yet despite these challenges,
                     migrants have continuously enriched British society through their contributions
@@ -195,24 +210,24 @@ export default async function StoryPage({ params }: { params: Promise<{ slug: st
                 {/* Rich Text Continued */}
                 <div className="prose prose-xl max-w-none">
                   <h2>Impact and Legacy</h2>
-                  <p className="text-[20px] leading-relaxed mb-6">
+                  <p className="body-text mb-6">
                     The legacy of this migration story continues to resonate today. From cultural
                     contributions to economic impact, from family histories to national identity,
                     these movements have fundamentally shaped modern Britain.
                   </p>
-                  <p className="text-[20px] leading-relaxed mb-6">
+                  <p className="body-text mb-6">
                     Migrants have brought new perspectives, skills, and traditions that have
                     transformed British society in countless ways. Their influence can be seen
                     in the arts, cuisine, music, literature, and the very fabric of urban and
                     rural communities across the nation.
                   </p>
-                  <p className="text-[20px] leading-relaxed mb-6">
+                  <p className="body-text mb-6">
                     The children and grandchildren of migrants often navigate multiple identities,
                     creating new hybrid cultures that blend heritage with contemporary British life.
                     This ongoing process of cultural exchange and adaptation continues to evolve,
                     shaping the Britain of tomorrow.
                   </p>
-                  <p className="text-[20px] leading-relaxed mb-6">
+                  <p className="body-text mb-6">
                     By exploring these narratives, we challenge simplistic understandings of
                     British history and recognize the complexity and richness that migration
                     brings to our shared story. Each personal journey contributes to the larger
@@ -249,6 +264,7 @@ export default async function StoryPage({ params }: { params: Promise<{ slug: st
         {/* Related Stories Carousel */}
         <MigrationStoriesCarousel stories={featuredStories} />
       </main>
+      </div>
 
       <Footer />
     </>

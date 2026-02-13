@@ -1,29 +1,79 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import Header from '@/components/layout/HeaderWithDropdowns';
 import Footer from '@/components/layout/Footer';
+import ScrollingLogoStack from '@/components/ScrollingLogoStack';
 import StoryCard from '@/components/streamfield/StoryCard';
 import { featuredStories, themes, timePeriods, geographies } from '@/data/sampleContent';
 
 export default function ExplorePage() {
-  // Randomly assign featured status (bright background) to ~15% of stories
-  const storiesWithFeatured = useMemo(() =>
-    featuredStories.map((story) => ({
-      ...story,
-      isFeatured: Math.random() < 0.15,
-    })),
-    []
-  );
+  // Filter state
+  const [themeFilter, setThemeFilter] = useState<string>('');
+  const [timeFilter, setTimeFilter] = useState<string>('');
+  const [geoFilter, setGeoFilter] = useState<string>('');
+  const [sortBy, setSortBy] = useState<string>('newest');
+
+  // Ensure one of first 2 items is featured, then ~15% random after that
+  const storiesWithFeatured = useMemo(() => {
+    // Randomly choose which of first 2 items should be featured (0 or 1)
+    const featuredIndex = Math.floor(Math.random() * 2);
+
+    let stories = featuredStories.map((story, index) => {
+      // Ensure at least one of first 2 is featured
+      if (index === 0 || index === 1) {
+        return {
+          ...story,
+          isFeatured: index === featuredIndex,
+        };
+      }
+      // After first 2, randomly assign featured status
+      return {
+        ...story,
+        isFeatured: Math.random() < 0.15,
+      };
+    });
+
+    // Apply filters
+    if (themeFilter) {
+      stories = stories.filter(story => story.theme.includes(themeFilter));
+    }
+    if (timeFilter) {
+      stories = stories.filter(story => story.timePeriod === timeFilter);
+    }
+    if (geoFilter) {
+      stories = stories.filter(story => story.geography === geoFilter);
+    }
+
+    // Apply sorting
+    if (sortBy === 'newest') {
+      // Reverse chronological order - newest first (based on timePeriod)
+      stories = [...stories].reverse();
+    } else if (sortBy === 'oldest') {
+      // Keep original chronological order
+      // No change needed as default order
+    } else if (sortBy === 'alpha') {
+      stories = [...stories].sort((a, b) => a.title.localeCompare(b.title));
+    }
+
+    return stories;
+  }, [themeFilter, timeFilter, geoFilter, sortBy]);
 
   return (
     <>
-      <Header />
+      {/* Scrolling Logo Stack */}
+      <ScrollingLogoStack />
 
-      <main id="main-content">
+      {/* Header with transparent background overlay */}
+      <div className="relative">
+        <div className="absolute top-0 left-0 right-0 z-50">
+          <Header transparent hideLogo searchIconOnly />
+        </div>
+
+        <main id="main-content">
         {/* Simple Hero */}
-        <section className="pt-16 pb-6 bg-mm-white">
-          <div className="container mx-auto px-4">
+        <section className="bg-mm-white" style={{ paddingTop: '196px', paddingBottom: '24px' }}>
+          <div className="container mx-auto px-4 text-center">
             <h1
               className="uppercase mb-0"
               style={{
@@ -39,9 +89,9 @@ export default function ExplorePage() {
         </section>
 
         {/* Filters */}
-        <section className="bg-mm-white border-b border-mm-grey-light">
+        <section className="bg-mm-white">
           <div className="container mx-auto px-4 pb-6">
-            <div className="flex flex-wrap gap-4">
+            <div className="flex flex-wrap gap-4 justify-center">
               {/* Theme Filter */}
               <div>
                 <label htmlFor="theme-filter" className="block text-sm font-semibold mb-2">
@@ -49,6 +99,8 @@ export default function ExplorePage() {
                 </label>
                 <select
                   id="theme-filter"
+                  value={themeFilter}
+                  onChange={(e) => setThemeFilter(e.target.value)}
                   className="px-4 py-2 border border-mm-grey-mid rounded focus:outline-none focus:ring-2 focus:ring-mm-violet"
                 >
                   <option value="">All Themes</option>
@@ -67,6 +119,8 @@ export default function ExplorePage() {
                 </label>
                 <select
                   id="time-filter"
+                  value={timeFilter}
+                  onChange={(e) => setTimeFilter(e.target.value)}
                   className="px-4 py-2 border border-mm-grey-mid rounded focus:outline-none focus:ring-2 focus:ring-mm-violet"
                 >
                   <option value="">All Periods</option>
@@ -85,6 +139,8 @@ export default function ExplorePage() {
                 </label>
                 <select
                   id="geography-filter"
+                  value={geoFilter}
+                  onChange={(e) => setGeoFilter(e.target.value)}
                   className="px-4 py-2 border border-mm-grey-mid rounded focus:outline-none focus:ring-2 focus:ring-mm-violet"
                 >
                   <option value="">All Regions</option>
@@ -103,6 +159,8 @@ export default function ExplorePage() {
                 </label>
                 <select
                   id="sort"
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value)}
                   className="px-4 py-2 border border-mm-grey-mid rounded focus:outline-none focus:ring-2 focus:ring-mm-violet"
                 >
                   <option value="newest">Newest First</option>
@@ -110,12 +168,6 @@ export default function ExplorePage() {
                   <option value="alpha">Alphabetical</option>
                 </select>
               </div>
-            </div>
-
-            <div className="mt-4">
-              <p className="text-sm text-mm-grey">
-                Showing <strong>{featuredStories.length} stories</strong>
-              </p>
             </div>
           </div>
         </section>
@@ -153,6 +205,7 @@ export default function ExplorePage() {
           </div>
         </section>
       </main>
+      </div>
 
       <Footer />
     </>

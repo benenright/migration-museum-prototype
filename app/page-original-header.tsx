@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Header from '@/components/layout/HeaderWithDropdowns';
 import Footer from '@/components/layout/Footer';
-import ScrollingLogoStack from '@/components/ScrollingLogoStack';
 import CollageHero from '@/components/CollageHero';
 import WhatsOnPanel from '@/components/streamfield/WhatsOnPanel';
 import MigrationStoriesCarousel from '@/components/MigrationStoriesCarousel';
@@ -28,16 +27,9 @@ export default function Home() {
 
   return (
     <>
-      {/* Scrolling Logo Stack */}
-      <ScrollingLogoStack />
+      <Header />
 
-      {/* Header with transparent background overlay */}
-      <div className="relative">
-        <div className="absolute top-0 left-0 right-0 z-50">
-          <Header transparent hideLogo searchIconOnly />
-        </div>
-
-        <main id="main-content">
+      <main id="main-content">
         <CollageHero
           title={
             <>
@@ -77,7 +69,7 @@ export default function Home() {
               <h2 className="text-4xl md:text-5xl font-bold mb-8">
                 We're opening in 2028
               </h2>
-              <p className="lead-text text-mm-grey">
+              <p className="text-lg md:text-xl text-mm-grey">
                 The Migration Museum will open its doors in the City of London in 2028.
                 A permanent home dedicated to exploring how the movement of people to and from
                 Britain across the ages has shaped who we are — as individuals, as communities,
@@ -170,13 +162,13 @@ export default function Home() {
           <div className="container mx-auto px-4">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
               <div>
-                <div className="inline-block px-3 py-1 bg-mm-blue text-mm-white badge-text mb-4">
+                <div className="inline-block px-3 py-1 bg-mm-blue text-mm-white text-sm font-bold uppercase mb-4">
                   Featured Story
                 </div>
                 <h2 className="text-4xl md:text-5xl font-bold mb-6">
                   The Windrush Generation
                 </h2>
-                <p className="lead-text text-mm-grey mb-6">
+                <p className="text-lg text-mm-grey mb-6">
                   Between 1948 and 1971, nearly half a million people moved from the Caribbean
                   to Britain. They were responding to the call to help rebuild post-war Britain
                   and fill labor shortages in the new National Health Service, public transport,
@@ -184,7 +176,7 @@ export default function Home() {
                 </p>
                 <a
                   href="/explore/windrush-generation"
-                  className="inline-flex items-center gap-2 text-mm-blue hover:text-mm-violet font-bold lead-text transition-colors"
+                  className="inline-flex items-center gap-2 text-mm-blue hover:text-mm-violet font-bold text-lg transition-colors"
                 >
                   Read their stories
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -197,8 +189,8 @@ export default function Home() {
                 <div className="relative h-96 bg-mm-blue angled-edge">
                   <div className="absolute inset-0 bg-mm-black opacity-20"></div>
                   <div className="absolute bottom-4 right-4 px-4 py-2 bg-mm-white">
-                    <p className="small-text font-bold">1948-1971</p>
-                    <p className="badge-text text-mm-grey">Caribbean → Britain</p>
+                    <p className="text-sm font-bold">1948-1971</p>
+                    <p className="text-xs text-mm-grey">Caribbean → Britain</p>
                   </div>
                 </div>
                 <div className="absolute -bottom-6 -left-6 w-48 h-48 bg-mm-yellow torn-edge opacity-80"></div>
@@ -210,7 +202,6 @@ export default function Home() {
         {/* Migration Stories Carousel */}
         <MigrationStoriesCarousel stories={featuredStories} />
       </main>
-      </div>
 
       <Footer />
     </>

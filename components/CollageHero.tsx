@@ -41,8 +41,8 @@ const imagePositions = [
   { bottom: '-5%', right: '15%', width: '38%', height: '55%', rotate: 8, zIndex: 15 },
   // Image 4 - medium, center right
   { top: '15%', right: '30%', width: '35%', height: '50%', rotate: -8, zIndex: 30 },
-  // Image 5 - small accent, left side
-  { bottom: '10%', left: '16%', width: '28%', height: '42%', rotate: 12, zIndex: 10 },
+  // Image 5 - small accent, left side (moved right and up on desktop)
+  { bottom: '-15%', left: '27%', width: '28%', height: '42%', rotate: 12, zIndex: 10 },
 ];
 
 export default function CollageHero({
@@ -87,9 +87,9 @@ export default function CollageHero({
       className="relative min-h-screen overflow-hidden"
       style={{ backgroundColor: colors.bg }}
     >
-      {/* Scattered cutout images */}
+      {/* Desktop cutout images */}
       {mounted && (
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute inset-0 overflow-hidden pointer-events-none hidden md:block">
           {displayImages.map((imageNum, index) => {
             // Sort positions by z-index descending to assign people to higher z-index
             const sortedPositions = [...imagePositions].sort((a, b) => b.zIndex - a.zIndex);
@@ -104,11 +104,12 @@ export default function CollageHero({
             const scale = baseScale * 0.75;
 
             // Shift all cutouts down by adjusting top/bottom positions
+            // Add 100px to move them further down on desktop
             const adjustedTop = pos.top
-              ? `calc(${pos.top} + 10%)`
+              ? `calc(${pos.top} + 15% + 100px)`
               : undefined;
             const adjustedBottom = pos.bottom
-              ? `calc(${pos.bottom} - 10%)`
+              ? `calc(${pos.bottom} - 15% - 100px)`
               : undefined;
 
             return (
@@ -134,7 +135,7 @@ export default function CollageHero({
                 >
                   <Image
                     src={getImagePath(imageNum)}
-                    alt="Migration story"
+                    alt=""
                     fill
                     className="object-contain drop-shadow-2xl"
                     sizes="(max-width: 768px) 50vw, 40vw"
@@ -146,16 +147,56 @@ export default function CollageHero({
         </div>
       )}
 
-      {/* Text Content - left aligned and positioned at top */}
-      <div className="container mx-auto px-4 min-h-screen flex items-start pt-32 md:pt-120">
-        <div className="relative z-40 max-w-xl lg:max-w-[66.666%]">
+      {/* Mobile cutout images - top right */}
+      {mounted && (
+        <div className="absolute top-0 right-0 overflow-hidden pointer-events-none md:hidden" style={{ width: '60%', height: '40vh' }}>
+          {displayImages.slice(0, 2).map((imageNum, index) => {
+            const isPerson = peopleCutouts.includes(imageNum);
+            const baseScale = isPerson ? 1.2 : 0.8;
+
+            return (
+              <div
+                key={`mobile-${imageNum}-${index}`}
+                className="absolute animate-slide-in"
+                style={{
+                  top: index === 0 ? '5%' : '25%',
+                  right: index === 0 ? '-5%' : '20%',
+                  width: `${baseScale * 45}%`,
+                  height: `${baseScale * 45}%`,
+                  zIndex: index === 0 ? 20 : 15,
+                  opacity: 0,
+                  animationDelay: `${index * 0.2}s`,
+                  animationFillMode: 'forwards',
+                }}
+              >
+                <div
+                  className="w-full h-full"
+                  style={{ transform: `rotate(${index === 0 ? -5 : 8}deg)` }}
+                >
+                  <Image
+                    src={getImagePath(imageNum)}
+                    alt=""
+                    fill
+                    className="object-contain drop-shadow-2xl"
+                    sizes="50vw"
+                  />
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Text Content */}
+      <div className="container mx-auto px-4 min-h-screen flex items-start pt-[45vh] md:pt-[calc(33.333vh-60px)]">
+        <div className="relative z-40 w-full md:max-w-xl lg:max-w-[66.666%] pl-0 md:pl-[100px]">
           <h1
-            className="mb-8"
+            className="mb-6 md:mb-8"
             style={{
               color: colors.text,
               letterSpacing: '-0.02em',
-              fontSize: 'clamp(2.5rem, 8vw, 3rem)',
-              lineHeight: 1,
+              fontSize: 'clamp(2rem, 8vw, 3rem)',
+              lineHeight: 1.1,
               fontWeight: 700
             }}
           >
@@ -163,14 +204,14 @@ export default function CollageHero({
           </h1>
           {subtitle && (
             <p
-              className="text-2xl md:text-3xl font-medium"
+              className="text-xl md:text-2xl lg:text-3xl font-medium"
               style={{ color: colors.text }}
             >
               {subtitle}
             </p>
           )}
           {buttons && buttons.length > 0 && (
-            <div className="flex flex-col sm:flex-row gap-4 mt-8">
+            <div className="flex flex-col sm:flex-row gap-4 mt-6 md:mt-8">
               {buttons.map((button, index) => (
                 <a
                   key={index}

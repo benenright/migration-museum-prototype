@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
+import { colorMap, textColorMap } from '@/constants/colors';
 
 interface StoryCardProps {
   id: string;
@@ -12,22 +13,6 @@ interface StoryCardProps {
   accentColor: 'blue' | 'violet' | 'orange' | 'yellow' | 'green';
   isFeatured?: boolean;
 }
-
-const colorMap = {
-  blue: '#5A5FEF',
-  violet: '#A880FF',
-  orange: '#FF5C45',
-  yellow: '#FFD700',
-  green: '#59F5B1',
-};
-
-const textColorMap = {
-  blue: '#FFFFFF',
-  violet: '#FFFFFF',
-  orange: '#FFFFFF',
-  yellow: '#000000',
-  green: '#000000',
-};
 
 export default function StoryCard({
   id,
@@ -65,7 +50,7 @@ export default function StoryCard({
         {/* Featured Badge */}
         {isFeatured && (
           <div
-            className="inline-block px-3 py-1 mb-6 text-xs font-bold uppercase"
+            className="inline-block px-3 py-1 mb-6 badge-text"
             style={{
               backgroundColor: textColor,
               color: bgColor,
@@ -77,10 +62,10 @@ export default function StoryCard({
 
         {/* Time Period & Geography */}
         <div className="mb-6">
-          <p className="text-sm font-bold mb-1" style={{ color: textColor }}>
+          <p className="small-text font-bold mb-1" style={{ color: textColor }}>
             {timePeriod}
           </p>
-          <p className="text-sm opacity-80" style={{ color: textColor }}>
+          <p className="small-text opacity-80" style={{ color: textColor }}>
             {geography}
           </p>
         </div>

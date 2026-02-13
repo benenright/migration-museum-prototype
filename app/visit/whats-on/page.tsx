@@ -1,45 +1,76 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import Header from '@/components/layout/HeaderWithDropdowns';
 import Footer from '@/components/layout/Footer';
+import ScrollingLogoStack from '@/components/ScrollingLogoStack';
 import Link from 'next/link';
 import { whatsOnEvents } from '@/data/sampleContent';
+import { colorMap, textColorMap } from '@/constants/colors';
 
 export default function WhatsOnPage() {
-  // Add random featured status to ~15% of events
-  const eventsWithFeatured = useMemo(() =>
-    whatsOnEvents.map((event) => ({
-      ...event,
-      isFeatured: Math.random() < 0.15,
-    })),
-    []
-  );
+  // Filter state
+  const [typeFilter, setTypeFilter] = useState<string>('');
+  const [statusFilter, setStatusFilter] = useState<string>('');
+  const [sortBy, setSortBy] = useState<string>('newest');
 
-  const colorMap = {
-    blue: '#5A5FEF',
-    violet: '#A880FF',
-    orange: '#FF5C45',
-    yellow: '#FFD700',
-    green: '#59F5B1',
-  };
+  // Ensure one of first 2 items is featured, then ~15% random after that
+  const eventsWithFeatured = useMemo(() => {
+    // Randomly choose which of first 2 items should be featured (0 or 1)
+    const featuredIndex = Math.floor(Math.random() * 2);
 
-  const textColorMap = {
-    blue: '#FFFFFF',
-    violet: '#FFFFFF',
-    orange: '#FFFFFF',
-    yellow: '#000000',
-    green: '#000000',
-  };
+    let events = whatsOnEvents.map((event, index) => {
+      // Ensure at least one of first 2 is featured
+      if (index === 0 || index === 1) {
+        return {
+          ...event,
+          isFeatured: index === featuredIndex,
+        };
+      }
+      // After first 2, randomly assign featured status
+      return {
+        ...event,
+        isFeatured: Math.random() < 0.15,
+      };
+    });
+
+    // Apply filters
+    if (typeFilter) {
+      events = events.filter(event => event.type === typeFilter);
+    }
+    if (statusFilter) {
+      events = events.filter(event => event.status === statusFilter);
+    }
+
+    // Apply sorting
+    if (sortBy === 'newest') {
+      // Sort by start date descending
+      events = [...events].sort((a, b) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime());
+    } else if (sortBy === 'oldest') {
+      // Sort by start date ascending
+      events = [...events].sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime());
+    } else if (sortBy === 'alpha') {
+      events = [...events].sort((a, b) => a.title.localeCompare(b.title));
+    }
+
+    return events;
+  }, [typeFilter, statusFilter, sortBy]);
 
   return (
     <>
-      <Header />
+      {/* Scrolling Logo Stack */}
+      <ScrollingLogoStack />
 
-      <main id="main-content">
+      {/* Header with transparent background overlay */}
+      <div className="relative">
+        <div className="absolute top-0 left-0 right-0 z-50">
+          <Header transparent hideLogo searchIconOnly />
+        </div>
+
+        <main id="main-content">
         {/* Simple Hero */}
-        <section className="pt-16 pb-6 bg-mm-white">
-          <div className="container mx-auto px-4">
+        <section className="bg-mm-white" style={{ paddingTop: '196px', paddingBottom: '24px' }}>
+          <div className="container mx-auto px-4 text-center">
             <h1
               className="uppercase mb-0"
               style={{
@@ -55,16 +86,18 @@ export default function WhatsOnPage() {
         </section>
 
         {/* Filters */}
-        <section className="bg-mm-white border-b border-mm-grey-light">
+        <section className="bg-mm-white">
           <div className="container mx-auto px-4 pb-6">
-            <div className="flex flex-wrap gap-4">
+            <div className="flex flex-wrap gap-4 justify-center">
               {/* Type Filter */}
               <div>
-                <label htmlFor="type-filter" className="block text-sm font-semibold mb-2">
+                <label htmlFor="type-filter" className="block small-text font-semibold mb-2">
                   Filter by Type
                 </label>
                 <select
                   id="type-filter"
+                  value={typeFilter}
+                  onChange={(e) => setTypeFilter(e.target.value)}
                   className="px-4 py-2 border border-mm-grey-mid rounded focus:outline-none focus:ring-2 focus:ring-mm-violet"
                 >
                   <option value="">All Types</option>
@@ -76,11 +109,13 @@ export default function WhatsOnPage() {
 
               {/* Status Filter */}
               <div>
-                <label htmlFor="status-filter" className="block text-sm font-semibold mb-2">
+                <label htmlFor="status-filter" className="block small-text font-semibold mb-2">
                   Filter by Status
                 </label>
                 <select
                   id="status-filter"
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
                   className="px-4 py-2 border border-mm-grey-mid rounded focus:outline-none focus:ring-2 focus:ring-mm-violet"
                 >
                   <option value="">All</option>
@@ -92,11 +127,13 @@ export default function WhatsOnPage() {
 
               {/* Sort */}
               <div>
-                <label htmlFor="sort" className="block text-sm font-semibold mb-2">
+                <label htmlFor="sort" className="block small-text font-semibold mb-2">
                   Sort by
                 </label>
                 <select
                   id="sort"
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value)}
                   className="px-4 py-2 border border-mm-grey-mid rounded focus:outline-none focus:ring-2 focus:ring-mm-violet"
                 >
                   <option value="newest">Newest First</option>
@@ -104,12 +141,6 @@ export default function WhatsOnPage() {
                   <option value="alpha">Alphabetical</option>
                 </select>
               </div>
-            </div>
-
-            <div className="mt-4">
-              <p className="text-sm text-mm-grey">
-                Showing <strong>{whatsOnEvents.length} exhibitions and events</strong>
-              </p>
             </div>
           </div>
         </section>
@@ -141,33 +172,27 @@ export default function WhatsOnPage() {
                           alt={event.title}
                           className="w-full h-full object-cover"
                         />
+                        {/* Tags over image */}
+                        <div className="absolute bottom-4 left-4 flex gap-0">
+                          {/* Type Tag - Colored */}
+                          <div
+                            className="px-3 py-1 badge-text"
+                            style={{
+                              backgroundColor: colorMap[event.accentColor],
+                              color: textColorMap[event.accentColor],
+                            }}
+                          >
+                            {event.type}
+                          </div>
+                          {/* Date Tag - White */}
+                          <div className="px-3 py-1 bg-mm-white text-mm-black badge-text">
+                            {event.dates}
+                          </div>
+                        </div>
                       </div>
 
                       {/* Content Section */}
                       <div className="p-8 md:p-10">
-                        {/* Featured Badge */}
-                        {event.isFeatured && (
-                          <div
-                            className="inline-block px-3 py-1 mb-6 text-xs font-bold uppercase"
-                            style={{
-                              backgroundColor: textColor,
-                              color: bgColor,
-                            }}
-                          >
-                            Featured
-                          </div>
-                        )}
-
-                        {/* Type & Status */}
-                        <div className="mb-6">
-                          <p className="text-sm font-bold mb-1" style={{ color: textColor }}>
-                            {event.type.charAt(0).toUpperCase() + event.type.slice(1)}
-                          </p>
-                          <p className="text-sm opacity-80" style={{ color: textColor }}>
-                            {event.dates}
-                          </p>
-                        </div>
-
                         {/* Title */}
                         <h3
                           className="text-3xl md:text-4xl font-bold mb-4 leading-tight"
@@ -227,6 +252,7 @@ export default function WhatsOnPage() {
           </div>
         </section>
       </main>
+      </div>
 
       <Footer />
     </>
